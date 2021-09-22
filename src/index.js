@@ -18,8 +18,7 @@ const SHOT_OPTS = {
   quality: 75,
 };
 const DEBUG = false;
-const START_URL = 'https://jspaint.app/';
-//const START_URL = 'https://www.github.com/i5ik/puppetromium';
+const START_URL = 'https://www.bing.com';
 const SHOT_DELAY = 300;
 const CLICK_DELAY = 300;
 const TYPE_DELAY = 150;
@@ -50,6 +49,7 @@ export async function start(port, {url: url = START_URL} = {}) {
   const page = await bro.newPage();
   await page.goto(url);
   await broadcastShot();
+  page.on('framenavigated', () => broadcastShot());
   console.log(`Started browser.`);
 
   process.stdout.write(`Starting server...`);
@@ -66,9 +66,16 @@ export async function start(port, {url: url = START_URL} = {}) {
     });
 
   /* iframe to send typing actions from */
-    app.get('/input_overlay.html', (req, res) => {
+    app.get('/input_overlay.html', async (req, res) => {
       res.type('html');
-      res.end(InputOverlay());
+
+      const keyInputHasFocus = await page.evaluate(() => {
+        return document.activeElement.matches('input,textarea,[contenteditable],select');
+      });
+
+      DEBUG && console.log({keyInputHasFocus});
+
+      res.end(InputOverlay({keyInputHasFocus}));
     });
 
   /* code to set the viewport approx size without client side JS */
@@ -81,6 +88,7 @@ export async function start(port, {url: url = START_URL} = {}) {
       const ua = req.headers['user-agent'];
       const isMobile = testMobile(ua);
       let {width,height} = req.params;
+
       width = parseFloat(width);
       height = parseFloat(height);
       
@@ -120,7 +128,7 @@ export async function start(port, {url: url = START_URL} = {}) {
 
   /* code to send actions (clicks and typing) */
     app.post('/carpediem', async (req, res) => {
-      let {'viewport.x':x,['viewport.y']:y,text} = req.body; 
+      let {'viewport.x':x,'viewport.y':y,text,address,scroll} = req.body; 
       let action;
 
       x = parseFloat(x);
@@ -135,16 +143,37 @@ export async function start(port, {url: url = START_URL} = {}) {
           type: 'typing',
           text
         };
+      } else if ( typeof address === "string" ) {
+        action = {
+          type: 'go',
+          address
+        };
+      } else if ( typeof scroll === "string" ) {
+        switch(scroll) {
+          case "up": action = {type: 'scrollup'}; break;
+          case "down": action = {type: 'scrolldown'}; break;
+          default: {
+            throw new TypeError(`Unknown scroll type: ${scroll}`);
+          }
+        }
       }
 
-      DEBUG && console.log({x,y,text,action}, req.body);
+      DEBUG && console.log({x,y,text,action,address,scroll}, req.body);
 
       if ( action ) {
         await sendAction(action);
       }
 
+      await sleep(CLICK_DELAY);
+
+      const keyInputHasFocus = await page.evaluate(() => {
+        return document.activeElement.matches('input,textarea,[contenteditable],select');
+      });
+
+      DEBUG && console.log({keyInputHasFocus});
+
       res.type('html');
-      res.end(InputOverlay());
+      res.end(InputOverlay({keyInputHasFocus}));
     });
 
   app.listen(port, err => {
@@ -163,20 +192,39 @@ export async function start(port, {url: url = START_URL} = {}) {
   async function sendAction(action) {
     // send action to browser
     switch(action.type) {
-      case "click":
+      case "scrolldown": {
+        await page.mouse.wheel({deltaY: 100});
+        await page.evaluate(() => window.scrollBy(0, 100));
+        await sleep(CLICK_DELAY);
+      } break;
+      case "scrollup": {
+        await page.mouse.wheel({deltaY: -100});
+        await page.evaluate(() => window.scrollBy(0, -100));
+        await sleep(CLICK_DELAY);
+      } break;
+      case "click": {
         const {x,y} = action;
         await page.mouse.click(x,y, {delay: CLICK_DELAY});
-        break;
-      case "typing":
+        await broadcastShot();
+      } break;
+      case "typing": {
         const {text} = action;
         await page.keyboard.type(text, {delay: TYPE_DELAY});
-        break;
+        await broadcastShot();
+      } break;
+      case "go": {
+        const {address:address = ''} = action;
+        if ( address.trim().length === 0 ) {
+          await page.reload();
+        } else {
+          await page.goto(address);
+        }
+      } break;
       default: {
         console.warn(`Error with action`, action);
         throw new TypeError(`sendAction received unknown action of type: ${action.type}`);
       } break;
     }
-    await broadcastShot();
     await broadcastShot();
   }
 
@@ -219,17 +267,61 @@ function BrowserView(state) {
         min-height: 100%;
         height: 100%;
       }
+
+      body {
+        display: grid;
+        grid-template-areas:
+          "address input"
+          "viewport viewport";
+        grid-template-rows: 1.75rem 1fr;
+        grid-template-columns: 61.799% 38.199%;
+        max-width: 100vw;
+        overflow: auto;
+        max-height: calc(100vh - 1.75rem);
+      }
+
+      nav {
+        display: contents;
+      }
+
+      form.address {
+        grid-area: address;
+        display: flex;
+      }
+
+      form.address input {
+        flex-grow: 1;
+      }
+
+      iframe.input {
+        grid-area: input;
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        padding: 0;
+      }
+
+      form.viewport {
+        grid-area: viewport;
+      }
     </style>
     <body>
-      <form target=input method=POST action=/carpediem>
+      <nav>
+        <form class=address target=input method=POST action=/carpediem>
+          <input type=url name=address placeholder="web URL">
+          <button>Go</button>
+        </form>
+        <iframe class=input id=input_overlay name=input src=/input_overlay.html></iframe>
+      </nav>
+      <form target=input method=POST action=/carpediem class=viewport>
         <input type=image src=/viewport.mjpeg name=viewport title="Puppetromium Viewport. Click here to interact." alt="Puppetromium Viewport. Click here to interact.">
       </form>
-      <iframe id=input_overlay name=input src=/input_overlay.html></iframe>
     </body>
-  `
+  `;
 }
 
-function InputOverlay(state) {
+function InputOverlay(state = {}) {
   return `
     <!DOCTYPE html>
     <meta name=viewport content=width=device-width,initial-scale=1>
@@ -248,14 +340,30 @@ function InputOverlay(state) {
         min-height: 100%;
         height: 100%;
       }
+
+      form.input {
+        display: flex;
+      }
+
+      form.input textarea {
+        flex-grow: 1;
+        max-height: 1.5rem;
+        flex-shrink: 1;
+        line-height: 1.618;
+      }
     </style>
     <body>
-      <form method=POST action=/carpediem>
-        <input type=text placeholder="Type your truth">
-        <button>Send</button>
-      </form>
+      <form method=POST action=/carpediem class=input>${
+        state.keyInputHasFocus ? `  
+          <textarea rows=1 name=text placeholder="Text to send"></textarea>
+          <button>Send</button>
+        ` : `
+          <button name=scroll value=down>Down</button>
+          <button name=scroll value=up>Up</button>
+        `
+      }</form>
     </body>
-  `
+  `;
 }
 
 function ViewportProbes(state) {
@@ -290,5 +398,3 @@ function testMobile(ua = '') {
 		return ua.match(toMatchItem);
 	});
 }
-
-
