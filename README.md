@@ -56,3 +56,38 @@ With, my friend, the following ingenious idea:
     ...
 ```
 
+## How can I too?
+
+Alternative install mantras:
+```sh
+$ npx puppetromium@latest 8080
+# or
+$ npm i -g puppetromium@latest
+$ puppetromium 8080
+```
+
+Or:
+```sh
+$ npm i --save puppetromium
+```
+Then:
+```js
+import start from 'puppetromium';
+start({port:8080, url:'https://jspaint.app'});
+```
+
+Or:
+```sh
+$ git clone https://github.com/i5ik/puppetromium.git
+$ cd puppetromium/
+$ npm i 
+$ npm start 8080
+```
+
+## HELP! It broke
+
+It's probably because of puppeteer dependencies. Make sure you have them all installed. I included a bunch of dependency scripts tailed to Debian (which may work on other Linuxes, but your mileage may encounter variability). 
+
+
+
+
