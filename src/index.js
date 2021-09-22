@@ -57,55 +57,87 @@ export async function start(port, {url: url = START_URL} = {}) {
   app.use(express.urlencoded({extended: true}));
   app.use(cookieParser());
 
-  app.get('/', (req, res) => {
-    res.end(BrowserView())
-  });
-
-  app.get('/input_overlay.html', (req, res) => {
-    res.type('html');
-    res.end(InputOverlay());
-  });
-
-  app.get('/viewport.mjpeg', async (req, res, next) => {
-    const mjpeg = mjpegServer.createReqHandler(req, res);
-    state.clients.push({
-      mjpeg, ip: getIP(req)
+  /* get the browser 'UI' */
+    app.get('/', (req, res) => {
+      res.end(BrowserView())
     });
-    // i don't know why 3 frames are needed
-    await broadcastShot();
-    await broadcastShot();
-    await broadcastShot();
-    console.log(`1 new client. Total clients: ${state.clients.length}`);
-    next();
-  });
 
-  app.post('/carpediem', async (req, res) => {
-    let {'viewport.x':x,['viewport.y']:y,text} = req.body; 
-    let action;
+  /* iframe to send typing actions from */
+    app.get('/input_overlay.html', (req, res) => {
+      res.type('html');
+      res.end(InputOverlay());
+    });
 
-    x = parseFloat(x);
-    y = parseFloat(y);
-    if ( Number.isFinite(x) && Number.isFinite(y) ) {
-      action = {
-        type: 'click',
-        x, y
-      };
-    } else if ( typeof text === "string" ) {
-      action = {
-        type: 'typing',
-        text
-      };
-    }
+  /* code to set the viewport approx size without client side JS */
+    app.get('/probe-viewport.css', (req, res) => {
+      res.type('css');
+      res.end(ViewportProbes());
+    });
 
-    DEBUG && console.log({x,y,text,action}, req.body);
+    app.get('/set-viewport-dimensions/width/:width/height/:height/set.png', async (req, res) => {
+      const ua = req.headers['user-agent'];
+      const isMobile = testMobile(ua);
+      let {width,height} = req.params;
+      width = parseFloat(width);
+      height = parseFloat(height);
+      
+      DEBUG && console.log({isMobile,width,height});
 
-    if ( action ) {
-      await sendAction(action);
-    }
+      await page.emulate({
+        viewport: {
+          width,
+          height,
+          isMobile
+        },
+        userAgent: ua
+      });
 
-    res.type('html');
-    res.end(InputOverlay());
-  });
+      res.type('png');
+      res.end(`PNG`);
+    });
+
+  /* code to stream the viewport using the MJPEG: https://en.wikipedia.org/wiki/Motion_JPEG */
+    app.get('/viewport.mjpeg', async (req, res, next) => {
+      const mjpeg = mjpegServer.createReqHandler(req, res);
+      state.clients.push({
+        mjpeg, ip: getIP(req)
+      });
+      // i don't know why 3 frames are needed
+      await broadcastShot();
+      await broadcastShot();
+      await broadcastShot();
+      console.log(`1 new client. Total clients: ${state.clients.length}`);
+      next();
+    });
+
+  /* code to send actions (clicks and typing) */
+    app.post('/carpediem', async (req, res) => {
+      let {'viewport.x':x,['viewport.y']:y,text} = req.body; 
+      let action;
+
+      x = parseFloat(x);
+      y = parseFloat(y);
+      if ( Number.isFinite(x) && Number.isFinite(y) ) {
+        action = {
+          type: 'click',
+          x, y
+        };
+      } else if ( typeof text === "string" ) {
+        action = {
+          type: 'typing',
+          text
+        };
+      }
+
+      DEBUG && console.log({x,y,text,action}, req.body);
+
+      if ( action ) {
+        await sendAction(action);
+      }
+
+      res.type('html');
+      res.end(InputOverlay());
+    });
 
   app.listen(port, err => {
     if ( err ) {
@@ -170,6 +202,7 @@ function BrowserView(state) {
       No client-side JavaScript. 
       Base on Puppeteer.
     </title>
+		<link rel=stylesheet href=/probe-viewport.css>
     <style>
       :root, body, form {
         margin: 0;
@@ -217,6 +250,37 @@ function InputOverlay(state) {
   `
 }
 
+function ViewportProbes(state) {
+  const BP = [];
+  for( let w = 300; w <= 1920; w+= 32) {
+    for( let h = 300; h <= 1080; h+= 32) {
+      BP.push({w, h});
+    }
+  }
+  const MR = BP.map(({w,h}) => `
+    @media screen and (min-width: ${w}px) and (min-height: ${h}px) {
+      body {
+        background-image: url("/set-viewport-dimensions/width/${w}/height/${h}/set.png") 
+      }
+    }
+  `);
+  return MR.join('\n');
+}
 
+function testMobile(ua = '') {
+	const toMatch = [
+		/Android/i,
+		/webOS/i,
+		/iPhone/i,
+		/iPad/i,
+		/iPod/i,
+		/BlackBerry/i,
+		/Windows Phone/i
+	];
+
+	return toMatch.some((toMatchItem) => {
+		return ua.match(toMatchItem);
+	});
+}
 
 
