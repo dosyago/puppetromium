@@ -4,6 +4,7 @@
     "express": "^4.17.1",
     "helmet": "^4.6.0",
     "mjpeg-server": "^0.3.1",
+    "nocache": "^3.0.1",
     "puppeteer": "^10.4.0"
   },
   "type": "module",
@@ -13,7 +14,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "nodemon src/index.js 8080",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "postinstall": "./scripts/deps.sh"
   },
   "repository": {
     "type": "git",

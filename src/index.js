@@ -7,6 +7,7 @@ import {randomFillSync} from 'crypto';
 import {fileURLToPath} from 'url';
 
 import helmet from 'helmet';
+import nocache from 'nocache';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import puppeteer from 'puppeteer';
@@ -16,12 +17,12 @@ const SHOT_OPTS = {
   type: 'jpeg',
   quality: 75,
 };
-const DEBUG = true;
+const DEBUG = false;
 const START_URL = 'https://jspaint.app/';
 //const START_URL = 'https://www.github.com/i5ik/puppetromium';
-const SHOT_DELAY = 750;
-const CLICK_DELAY = 150;
-const TYPE_DELAY = 300;
+const SHOT_DELAY = 300;
+const CLICK_DELAY = 300;
+const TYPE_DELAY = 150;
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 const getIP = req => req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
@@ -54,6 +55,8 @@ export async function start(port, {url: url = START_URL} = {}) {
   process.stdout.write(`Starting server...`);
   const app = express();
   //app.use(helmet());
+  //app.set('etag', false);
+  //app.use(nocache());
   app.use(express.urlencoded({extended: true}));
   app.use(cookieParser());
 
@@ -92,6 +95,11 @@ export async function start(port, {url: url = START_URL} = {}) {
         userAgent: ua
       });
 
+      await broadcastShot();
+      await page.reload();
+      await broadcastShot();
+      await broadcastShot();
+
       res.type('png');
       res.end(`PNG`);
     });
@@ -106,7 +114,7 @@ export async function start(port, {url: url = START_URL} = {}) {
       await broadcastShot();
       await broadcastShot();
       await broadcastShot();
-      console.log(`1 new client. Total clients: ${state.clients.length}`);
+      DEBUG && console.log(`1 new client. Total clients: ${state.clients.length}`);
       next();
     });
 
@@ -169,14 +177,14 @@ export async function start(port, {url: url = START_URL} = {}) {
       } break;
     }
     await broadcastShot();
-    await Promise.race([sleep(SHOT_DELAY), page.waitForNavigation({timeout:SHOT_DELAY})]);
     await broadcastShot();
   }
 
   async function broadcastShot() {
     if ( state.shooting ) return;
-    console.log(`Shooting`);
+    DEBUG && console.log(`Shooting`);
     state.shooting = true;
+    await Promise.race([sleep(SHOT_DELAY), page.waitForNavigation({timeout:SHOT_DELAY})]);
     state.latestShot = await page.screenshot(SHOT_OPTS);
     state.shooting = false;
     state.clients.forEach(({mjpeg, ip}) => {
