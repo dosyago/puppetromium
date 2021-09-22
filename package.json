@@ -7,6 +7,9 @@
     "nocache": "^3.0.1",
     "puppeteer": "^10.4.0"
   },
+  "bin": {
+    "puppetromium": "src/index.js"
+  },
   "type": "module",
   "name": "puppetromium",
   "description": "A stupidly simple web-browser based on Puppeteer",

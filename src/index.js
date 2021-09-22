@@ -1,14 +1,7 @@
-import os from 'os';
 import fs from 'fs';
 import path from 'path';
-//import http from 'http';
-//import https from 'https';
-//import {randomFillSync} from 'crypto';
 import {fileURLToPath} from 'url';
 
-//import helmet from 'helmet';
-//import nocache from 'nocache';
-//import cookieParser from 'cookie-parser';
 import express from 'express';
 import puppeteer from 'puppeteer';
 import mjpegServer from 'mjpeg-server';
@@ -25,7 +18,12 @@ const TYPE_DELAY = 150;
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 const getIP = req => req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-const CLI = fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+let CLI = false;
+try {
+  CLI = fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+} catch(e) {
+  DEBUG && console.info(e);
+}
 
 if ( CLI ) {
   const PORT = parseInt(process.argv[2]);
@@ -36,7 +34,7 @@ if ( CLI ) {
   start(PORT);
 }
 
-export async function start(port, {url: url = START_URL} = {}) {
+export async function start({port: port = 8080, url: url = START_URL} = {}) {
   const state = {
     shooting: false,
     latestShot: null,
@@ -54,11 +52,8 @@ export async function start(port, {url: url = START_URL} = {}) {
 
   process.stdout.write(`Starting server...`);
   const app = express();
-  //app.use(helmet());
-  //app.set('etag', false);
-  //app.use(nocache());
+  app.set('etag', false);
   app.use(express.urlencoded({extended: true}));
-  //app.use(cookieParser());
 
   /* get the browser 'UI' */
     app.get('/', (req, res) => {
@@ -237,9 +232,7 @@ export async function start(port, {url: url = START_URL} = {}) {
     state.shooting = false;
     state.clients.forEach(({mjpeg, ip}) => {
       try {
-        //console.log(state.latestShot);
         mjpeg.write(state.latestShot);
-        //console.log(`Write done`);
       } catch(e) {
         console.warn(`Error on send MJPEG frame to client`, e, {mjpeg, ip});
       }
@@ -258,7 +251,7 @@ function BrowserView(state) {
       No client-side JavaScript. 
       Base on Puppeteer.
     </title>
-		<link rel=stylesheet href=/probe-viewport.css>
+    <link rel=stylesheet href=/probe-viewport.css>
     <style>
       :root, body, form {
         margin: 0;
@@ -384,17 +377,17 @@ function ViewportProbes(state) {
 }
 
 function testMobile(ua = '') {
-	const toMatch = [
-		/Android/i,
-		/webOS/i,
-		/iPhone/i,
-		/iPad/i,
-		/iPod/i,
-		/BlackBerry/i,
-		/Windows Phone/i
-	];
+  const toMatch = [
+    /Android/i,
+    /webOS/i,
+    /iPhone/i,
+    /iPad/i,
+    /iPod/i,
+    /BlackBerry/i,
+    /Windows Phone/i
+  ];
 
-	return toMatch.some((toMatchItem) => {
-		return ua.match(toMatchItem);
-	});
+  return toMatch.some((toMatchItem) => {
+    return ua.match(toMatchItem);
+  });
 }
