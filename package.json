@@ -1,0 +1,39 @@
+{
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "helmet": "^4.6.0",
+    "mjpeg-server": "^0.3.1",
+    "puppeteer": "^10.4.0"
+  },
+  "type": "module",
+  "name": "puppetromium",
+  "description": "A stupidly simple web-browser based on Puppeteer",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "nodemon src/index.js 8080",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/i5ik/puppetromium.git"
+  },
+  "keywords": [
+    "puppeteer",
+    "puppetromium",
+    "chromium",
+    "chrome",
+    "browser"
+  ],
+  "author": "@dosy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/i5ik/puppetromium/issues"
+  },
+  "homepage": "https://github.com/i5ik/puppetromium#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
