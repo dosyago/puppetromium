@@ -1,14 +1,14 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import http from 'http';
-import https from 'https';
-import {randomFillSync} from 'crypto';
+//import http from 'http';
+//import https from 'https';
+//import {randomFillSync} from 'crypto';
 import {fileURLToPath} from 'url';
 
-import helmet from 'helmet';
-import nocache from 'nocache';
-import cookieParser from 'cookie-parser';
+//import helmet from 'helmet';
+//import nocache from 'nocache';
+//import cookieParser from 'cookie-parser';
 import express from 'express';
 import puppeteer from 'puppeteer';
 import mjpegServer from 'mjpeg-server';
@@ -58,7 +58,7 @@ export async function start(port, {url: url = START_URL} = {}) {
   //app.set('etag', false);
   //app.use(nocache());
   app.use(express.urlencoded({extended: true}));
-  app.use(cookieParser());
+  //app.use(cookieParser());
 
   /* get the browser 'UI' */
     app.get('/', (req, res) => {
