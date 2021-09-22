@@ -76,7 +76,7 @@ $ npm i --save puppetromium
 ```
 Then:
 ```js
-import start from 'puppetromium';
+import {start} from 'puppetromium';
 start({port:8080, url:'https://jspaint.app'});
 ```
 
