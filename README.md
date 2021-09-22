@@ -2,7 +2,9 @@
 
 ![puppetromium in action](https://github.com/i5ik/puppetromium/raw/main/puppetromium.PNG)
 
-A stupidly simple web-browser based on Puppeteer. If Chromium and Puppeteer had a love child, it would be this horrible. Probably. 
+## A simple browser UI for puppeteer, built with no client-side JavaScript.
+
+**Puppetromium** is a stupidly simple web-browser based on Puppeteer. If Chromium and Puppeteer had a love child, it would be this horrible. Probably. 
 
 Also, **there is no (as in zero "0") client-side scripting of any kind. No JavaScript. No ActionScript. No Flash. This crazy-simple remote browser UI is built entirely with HTML and CSS.**
 
