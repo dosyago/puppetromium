@@ -13,7 +13,7 @@
   "type": "module",
   "name": "puppetromium",
   "description": "A stupidly simple web-browser based on Puppeteer",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "main": "src/index.js",
   "scripts": {
     "test": "nodemon src/index.js 8080",
