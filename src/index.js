@@ -32,7 +32,7 @@ if ( CLI ) {
     throw new TypeError(`Supply port as first argument.`);
   }
 
-  start(PORT);
+  start({port:PORT});
 }
 
 export async function start({port: port = 8080, url: url = START_URL} = {}) {
