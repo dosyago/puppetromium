@@ -18,7 +18,7 @@
   "scripts": {
     "test": "nodemon src/index.js 8080",
     "start": "node src/index.js",
-    "postinstall": "./scripts/deps.sh"
+    "nixinstall": "./scripts/deps.sh"
   },
   "repository": {
     "type": "git",

@@ -1,10 +1,10 @@
-# :tophat: [puppetromium](https://github.com/i5ik/puppetromium) ![npm](https://img.shields.io/npm/dt/puppetromium?style=social) ![npm](https://img.shields.io/npm/v/puppetromium?color=00ffee)
+# :tophat: [puppetromium](https://github.com/crisdosyago/puppetromium) ![npm](https://img.shields.io/npm/dt/puppetromium?style=social) ![npm](https://img.shields.io/npm/v/puppetromium?color=00ffee)
 
-![puppetromium in action](https://github.com/i5ik/puppetromium/raw/main/puppetromium.PNG)
+![puppetromium in action](https://github.com/crisdosyago/puppetromium/raw/main/puppetromium.PNG)
 
 ## A simple browser UI for puppeteer, built with no client-side JavaScript.
 
-**Puppetromium** is a [single file](https://github.com/i5ik/puppetromium/blob/main/src/index.js) simple web-browser built on Puppeteer. If Chromium and Puppeteer had a love child, it would be this horrible. Probably. 
+**Puppetromium** is a [single file](https://github.com/crisdosyago/puppetromium/blob/main/src/index.js) simple web-browser built on Puppeteer. If Chromium and Puppeteer had a love child, it would be this horrible. Probably. 
 
 Also, **there is no (as in zero "0") client-side scripting (in this browser UI) of any kind. No JavaScript. No ActionScript. No Flash. This crazy-simple remote browser UI is built entirely with HTML and CSS.**
 
@@ -18,9 +18,9 @@ With the power ⚡ 💪, my friend, of the following ancient®️ techs©️ fro
 
 ## but why?
 
-Mostly as an exercise. To see how simple I get a remote browser that is still minimally usable. But also as an example of why puppeteer is not a great fit for this. And a reminder why I created a [whole other browser driving](https://github.com/i5ik/ViewFinder/blob/master/zombie-lord/controller.js) [protocol atop the DevTools protocol](https://github.com/i5ik/ViewFinder/blob/master/zombie-lord/connection.js) for my custom [remote isolated browser](https://github.com/i5ik/ViewFinder). 
+Mostly as an exercise. To see how simple I get a remote browser that is still minimally usable. But also as an example of why puppeteer is not a great fit for this. And a reminder why I created a [whole other browser driving](https://github.com/crisdosyago/ViewFinder/blob/master/zombie-lord/controller.js) [protocol atop the DevTools protocol](https://github.com/crisdosyago/ViewFinder/blob/master/zombie-lord/connection.js) for my custom [remote isolated browser](https://github.com/crisdosyago/ViewFinder). 
 
-Also because I thought people will think a browser UI built with Puppeteer is cool, and it might encourage them to get into remote browsing, and custom browser UIs for cloud browsers, and hack on top of it. I wanted to release something with a very [permissive license](https://github.com/i5ik/puppetromium/blob/main/LICENSE), that might spark people's imaginations about how they could use this kind of tech in their own project. I wanted something I could build in 1 day (and indeed, it took me around 6 hours). I wanted something where I wasn't restricted by the need to keep the license strict (e.g., AGPL-3.0), in order to preserve my business of selling corporate license exceptions and SaaS deployments. 
+Also because I thought people will think a browser UI built with Puppeteer is cool, and it might encourage them to get into remote browsing, and custom browser UIs for cloud browsers, and hack on top of it. I wanted to release something with a very [permissive license](https://github.com/crisdosyago/puppetromium/blob/main/LICENSE), that might spark people's imaginations about how they could use this kind of tech in their own project. I wanted something I could build in 1 day (and indeed, it took me around 6 hours). I wanted something where I wasn't restricted by the need to keep the license strict (e.g., AGPL-3.0), in order to preserve my business of selling corporate license exceptions and SaaS deployments. 
 
 I wanted to give people a way they could get their toes wet, without having to pay anything, and so they might build their own on top of it. Because the type of people who would probably find this useful to hack on, are not the type of people who want to pay for a corporate license.
 
@@ -82,11 +82,15 @@ start({port:8080, url:'https://jspaint.app'});
 
 Or:
 ```sh
-$ git clone https://github.com/i5ik/puppetromium.git
+$ git clone https://github.com/crisdosyago/puppetromium.git
 $ cd puppetromium/
 $ npm i 
 $ npm start 8080
 ```
+
+
+**NOTE:** If you're on Linux you should run `npm run nixinstall` after npm i. 
+This will install the dependencies.
 
 ## HELP! It broke
 
