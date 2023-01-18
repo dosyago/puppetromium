@@ -60,19 +60,29 @@ With, my friend, the following ingenious idea:
     ...
 ```
 
-## How can I too?
+## How can I too? :gem:
 
-Alternative install mantras:
-```sh
-$ npx puppetromium@latest 8080
-# or
-$ npm i -g puppetromium@latest
-$ puppetromium 8080
+Note that you may first want to export the following environment variables (change depending on your local Chrome-compatible browser binary path), this skips the lengthy and bandwidth expensive (and npm cache expensive, poor little old npm!) download of chromium endemic to puppeteer:
+
+```shell
+$ export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+$ export PUPPETEER_EXECUTABLE_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 ```
 
-Or:
+Then you can get into it quickly, as follows.
+
+## Install mantra alternatives:
+
 ```sh
-$ npm i --save puppetromium
+$ git clone https://github.com/crisdosyago/puppetromium.git
+$ cd puppetromium
+$ npm i 
+$ npm test
+```
+
+Or `npm start <... your port ...>` where your port is the port you want to run it on.
+
+Or you can `npm i --save` the package and then:
 ```
 Then:
 ```js
@@ -82,12 +92,13 @@ start({port:8080, url:'https://jspaint.app'});
 
 Or:
 ```sh
-$ git clone https://github.com/crisdosyago/puppetromium.git
-$ cd puppetromium/
-$ npm i 
-$ npm start 8080
+$ npx puppetromium@latest 8080
+# or
+$ npm i -g puppetromium@latest
+$ puppetromium 8080
 ```
 
+## Linux and Linuxes
 
 **NOTE:** If you're on Linux you should run `npm run nixinstall` after npm i. 
 This will install the dependencies.
