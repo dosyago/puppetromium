@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "cookie-parser": "latest",
     "express": "latest",
     "helmet": "latest",
     "mjpeg-server": "latest",
