@@ -32,10 +32,10 @@ jobs:
 
     - name: Start server & ngrok tunnel
       run: |
-        npm start &
-        sleep 10
+        npm start 8080 &
+        sleep 5
         ngrok http 8080 &
-        sleep 10
+        sleep 5
 
     - name: Get ngrok public URL
       id: ngrok
