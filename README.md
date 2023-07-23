@@ -16,6 +16,22 @@ With the power ⚡ 💪, my friend, of the following ancient®️ techs©️ fro
 - [`<input type=image src=/viewport.mjpeg>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/image#using_the_x_and_y_data_points) to capture X and Y co-ordinates of pointer events and post them to the server on click. 
 - [targeted forms](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-target) and [named iframes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-name) to allow transmitting actions like 'type text' or 'scroll down' without reloading the top-level page. 
 
+## How can I too?
+
+### Running Puppetromium with GitHub Actions
+
+Puppetromium can also be deployed directly from your GitHub repository using GitHub Actions. This offers a unique way to interact with a web browser running on a GitHub Action runner.
+
+Here are the steps to set up Puppetromium on GitHub Actions:
+
+1. Fork this repo: Start by forking this repository to your own GitHub account.
+2. Setup ngrok token: Sign up on ngrok and get your authtoken. Add this token to your forked repository's secrets (Settings -> Secrets -> New repository secret). Name the secret NGROK_AUTH_TOKEN.
+3. Run the workflow: Go to Actions tab in your repository, select the CI workflow, and click Run workflow.
+4. Access your instance: Once the workflow completes successfully, it outputs an ngrok public URL that you can use to access your Puppetromium instance running on GitHub's infrastructure.
+5. Please note, GitHub Actions has a timeout, so your instance will not stay alive indefinitely. For longer sessions, consider deploying on a dedicated server.
+
+This feature of Puppetromium is an excellent way to get your toes wet in the world of remote browsing and cloud browsers without any cost. Feel free to experiment and build on top of it!
+
 ## but why?
 
 Mostly as an exercise. To see how simple I get a remote browser that is still minimally usable. But also as an example of why puppeteer is not a great fit for this. And a reminder why I created a [whole other browser driving](https://github.com/crisdosyago/BrowserBox/blob/master/zombie-lord/controller.js) [protocol atop the DevTools protocol](https://github.com/crisdosyago/BrowserBox/blob/master/zombie-lord/connection.js) for my custom [remote isolated browser](https://github.com/crisdosyago/BrowserBox). 
