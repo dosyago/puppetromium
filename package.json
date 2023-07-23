@@ -38,6 +38,6 @@
   },
   "homepage": "https://github.com/i5ik/puppetromium#readme",
   "devDependencies": {
-    "nodemon": "^2.0.12"
+    "nodemon": "latest"
   }
 }

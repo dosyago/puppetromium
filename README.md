@@ -65,8 +65,8 @@ With, my friend, the following ingenious idea:
 Note that you may first want to export the following environment variables (change depending on your local Chrome-compatible browser binary path), this skips the lengthy and bandwidth expensive (and npm cache expensive, poor little old npm!) download of chromium endemic to puppeteer:
 
 ```shell
-$ export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-$ export PUPPETEER_EXECUTABLE_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 
 Then you can get into it quickly, as follows.
