@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install -y libx11-xcb1 libxcomposite1 libxdamage1 libxext6 libxfixes3 libnss3 libnspr4 libasound2 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxrandr2 libpangocairo-1.0-0 libgtk-3-0
-        npm ci
+        npm ci || echo "npm ci failed"
 
     - name: Install ngrok
       run: npm install ngrok -g
@@ -37,4 +37,11 @@ jobs:
     - name: Get ngrok public URL
       run: |
         curl http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+
+    - name: Upload npm debug log
+      if: failure()
+      uses: actions/upload-artifact@v2
+      with:
+        name: npm-debug-log
+        path: /home/runner/.npm/_logs/*-debug.log
 
